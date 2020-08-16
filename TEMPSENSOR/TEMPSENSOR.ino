@@ -8,6 +8,8 @@
 
 int LED_G = 8;
 int LED_R = 9;
+int RR = 10;
+int RL = 7;
 
 // Thermistor objects
 THERMISTOR thermistor(NTC_PIN,        // Analog pin
@@ -30,8 +32,12 @@ void setup()
 {
   pinMode(LED_G, OUTPUT);
   pinMode(LED_R, OUTPUT);
+  pinMode(RR, OUTPUT);
+  pinMode(RL, OUTPUT);
   digitalWrite (LED_G, HIGH);
   digitalWrite (LED_R, LOW);
+  digitalWrite (RR, HIGH);
+  digitalWrite (RR, LOW);
   Serial.begin(9600);
 }
 
@@ -51,9 +57,13 @@ void loop()
   if(temp<320){
     digitalWrite (LED_G, HIGH);
     digitalWrite (LED_R, LOW);
+    digitalWrite (RR, HIGH);
+    digitalWrite (RL, LOW);
   }else {
     digitalWrite (LED_G, LOW);
     digitalWrite (LED_R, HIGH);
+    digitalWrite (RR, LOW);
+    digitalWrite (RL, HIGH);
   }
 
   delay(5000);
