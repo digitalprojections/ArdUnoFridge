@@ -4,15 +4,13 @@
 
 // Analog pin used to read the NTC
 #define NTC_PIN               A0
-#define NTC_PIN2               A1
+//#define NTC_PIN2               A1
 
-int LED_G = 9;
-int LED_R = 8;
-int RR = 7;
-int RL = 10;
+int LED_G = 10;
+int LED_R = 9;
 
-int FT = -10;
-int MT = 5;
+int FT = -7;
+int MT = 0;
 
 // Thermistor objects
 THERMISTOR thermistor(NTC_PIN,        // Analog pin
@@ -25,7 +23,7 @@ THERMISTOR thermistor2(NTC_PIN2,        // Analog pin
                       10000);         // Value of the series resistor
 // Global temperature reading
 uint16_t temp;
-uint16_t temp2;
+//uint16_t temp2;
 /**
  * setup
  *
@@ -35,12 +33,8 @@ void setup()
 {
   pinMode(LED_G, OUTPUT);
   pinMode(LED_R, OUTPUT);
-  pinMode(RR, OUTPUT);
-  pinMode(RL, OUTPUT);
   digitalWrite (LED_G, HIGH);
   digitalWrite (LED_R, LOW);
-  digitalWrite (RR, HIGH);
-  digitalWrite (RL, LOW);
   Serial.begin(9600);
 }
 
@@ -52,24 +46,21 @@ void setup()
 void loop()
 {
   temp = thermistor.read();   // Read temperature
-  temp2 = thermistor2.read();   // Read temperature
+  //temp2 = thermistor2.read();   // Read temperature
   Serial.print("Temp in 1/10 ºC : ");
   Serial.println(temp);
   Serial.println(temp2);
 
   //Cooling
-  if(temp>=MT && temp2>=MT){
+  if(temp>=MT){
     digitalWrite (LED_G, HIGH);
     digitalWrite (LED_R, LOW);
-    digitalWrite (RR, HIGH);
-    digitalWrite (RL, LOW);
   }else if(temp<=FT && temp2<=FT){
     //both sensors are freezing. Cold enough to rest
     //start defrost
     digitalWrite (LED_G, LOW);
     digitalWrite (LED_R, HIGH);
-    digitalWrite (RR, LOW);
-    digitalWrite (RL, HIGH);
+    delay(360000);
   }
   
 
