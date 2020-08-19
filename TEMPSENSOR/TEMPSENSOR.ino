@@ -24,6 +24,8 @@ THERMISTOR thermistor2(NTC_PIN2,        // Analog pin
 // Global temperature reading
 int temp;
 int temp2;
+
+bool defrost = false;
 /**
  * setup
  *
@@ -33,8 +35,8 @@ void setup()
 {
   pinMode(LED_G, OUTPUT);
   pinMode(LED_R, OUTPUT);
-  digitalWrite (LED_G, HIGH);
-  digitalWrite (LED_R, LOW);
+  //digitalWrite (LED_G, HIGH);
+  //digitalWrite (LED_R, LOW);
   Serial.begin(9600);
 }
 
@@ -52,15 +54,25 @@ void loop()
   Serial.println(temp2);
 
   //Cooling
-  if(temp>=MT){
+  if(temp>=MT && defrost){
+    //Melting temperature met and defrost mode was ON
     digitalWrite (LED_G, HIGH);
     digitalWrite (LED_R, LOW);
-  }else if(temp<=FT){
-    //both sensors are freezing. Cold enough to rest
-    //start defrost
+    defrost = false;
+    
+  }else if(temp<=FT && !defrost){    
+    //it is freezing. Cold enough to rest    
     digitalWrite (LED_G, LOW);
     digitalWrite (LED_R, HIGH);
-    //delay(360000);
+    //because the defrost mode not yet started, start defrost
+    defrost = true;
+    
+  } else if(temp<MT && temp>FT && !defrost){
+    //temp is below melting point and no defrost mode
+    //probably a restart in the middle of operation
+    //must continue freezing
+    digitalWrite (LED_G, HIGH);
+    digitalWrite (LED_R, LOW);    
   }
   
 
