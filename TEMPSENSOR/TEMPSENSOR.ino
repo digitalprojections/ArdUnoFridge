@@ -7,7 +7,7 @@
 #define NTC_PIN2               A1
 
 int LED_R = 10;
-int LED_G = 9;
+int LED_G = 8;
 
 int FT = -70;
 int MT = 0;
@@ -67,7 +67,7 @@ void loop()
     //because the defrost mode not yet started, start defrost
     defrost = true;
     
-  } else if(temp<MT && temp>FT && !defrost){
+  } else if(temp>FT && !defrost){
     //temp is below melting point and no defrost mode
     //probably a restart in the middle of operation
     //must continue freezing
