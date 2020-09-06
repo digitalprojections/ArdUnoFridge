@@ -14,13 +14,10 @@ int MT = 0;
 
 // Thermistor objects
 THERMISTOR thermistor(NTC_PIN,        // Analog pin
-                      10000,          // Nominal resistance at 25 ºC
-                      3950,           // thermistor's beta coefficient
-                      10000);         // Value of the series resistor
-THERMISTOR thermistor2(NTC_PIN2,        // Analog pin
-                      10000,          // Nominal resistance at 25 ºC
-                      3950,           // thermistor's beta coefficient
-                      10000);         // Value of the series resistor
+                      400,          // Nominal resistance at 25 ºC
+                      3000,           // thermistor's beta coefficient
+                      400);         // Value of the series resistor
+
 // Global temperature reading
 int temp;
 int temp2;
@@ -48,10 +45,10 @@ void setup()
 void loop()
 {
   temp = thermistor.read();   // Read temperature
-  temp2 = thermistor2.read();   // Read temperature
+  //temp2 = thermistor2.read();   // Read temperature
   Serial.print("Temp in 1/10 ºC : ");
   Serial.println(temp);
-  Serial.println(temp2);
+  //Serial.println(temp2);
 
   //Cooling
   if(temp>=MT && defrost){
