@@ -3,14 +3,14 @@
 
 
 // Analog pin used to read the NTC
-#define NTC_PIN               A0
-#define NTC_PIN2               A1
+#define NTC_PIN A0
+#define NTC_PIN2 A1
 
-int LED_R = 10;
-int LED_G = 8;
+int LED_Red = 10;
+int LED_Green = 8;
 
-int FT = -70;
-int MT = 0;
+int FREEZING_TEMP = -70;
+int MELT_TEMP = 20;
 
 // Thermistor objects
 THERMISTOR thermistor(NTC_PIN,        // Analog pin
@@ -22,7 +22,7 @@ THERMISTOR thermistor(NTC_PIN,        // Analog pin
 int temp;
 int temp2;
 
-bool defrost = false;
+bool wasWorking = false;
 /**
  * setup
  *
@@ -30,10 +30,10 @@ bool defrost = false;
  */
 void setup()
 {
-  pinMode(LED_G, OUTPUT);
-  pinMode(LED_R, OUTPUT);
-  //digitalWrite (LED_G, HIGH);
-  //digitalWrite (LED_R, LOW);
+  pinMode(LED_Green, OUTPUT);
+  pinMode(LED_Red, OUTPUT);
+  digitalWrite (LED_Green, LOW);
+  digitalWrite (LED_Red, LOW);
   Serial.begin(9600);
 }
 
@@ -46,32 +46,37 @@ void loop()
 {
   temp = thermistor.read();   // Read temperature
   //temp2 = thermistor2.read();   // Read temperature
-  Serial.print("Temp in 1/10 ºC : ");
-  Serial.println(temp);
-  //Serial.println(temp2);
+  
 
   //Cooling
-  if(temp>=MT && defrost){
+  if(temp>=MELT_TEMP && !wasWorking){
     //Melting temperature met and defrost mode was ON
-    digitalWrite (LED_G, HIGH);
-    digitalWrite (LED_R, LOW);
-    defrost = false;
+    //START
+    motorRun(1);
+    wasWorking=true;
     
-  }else if(temp<=FT && !defrost){    
-    //it is freezing. Cold enough to rest    
-    digitalWrite (LED_G, LOW);
-    digitalWrite (LED_R, HIGH);
+  }else if(temp<=FREEZING_TEMP && wasWorking){    
+    //it is freezing. Cold enough to rest   
     //because the defrost mode not yet started, start defrost
-    defrost = true;
-    
-  } else if(temp>FT && !defrost){
-    //temp is below melting point and no defrost mode
-    //probably a restart in the middle of operation
-    //must continue freezing
-    digitalWrite (LED_G, HIGH);
-    digitalWrite (LED_R, LOW);    
+    motorRun(0);
+    delay(900000);//30 minutes
+    wasWorking=false;
   }
-  
+
+
 
   delay(5000);
 }
+void motorRun(int allowed){
+  Serial.println("motor runs: ");
+  Serial.println(allowed);
+  Serial.print("Temp in MY CODE ºC : ");  
+  Serial.println(temp);
+    if(allowed){
+      digitalWrite (LED_Green, HIGH);
+      digitalWrite (LED_Red, LOW);      
+    }else{
+      digitalWrite (LED_Green, LOW);
+      digitalWrite (LED_Red, HIGH);
+    }
+  }
