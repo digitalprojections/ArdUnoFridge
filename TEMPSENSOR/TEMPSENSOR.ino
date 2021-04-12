@@ -7,16 +7,16 @@
 #define NTC_PIN2 A1
 
 int LED_Red = 10;
-int LED_Green = 8;
+int LED_Green = 9;
 
 int FREEZING_TEMP = -70;
-int MELT_TEMP = 20;
+int MELT_TEMP = 30;
 
 // Thermistor objects
-THERMISTOR thermistor(NTC_PIN,        // Analog pin
-                      400,          // Nominal resistance at 25 ºC
-                      3000,           // thermistor's beta coefficient
-                      400);         // Value of the series resistor
+THERMISTOR thermistor(NTC_PIN2,        // Analog pin
+                      10000,          // Nominal resistance at 25 ºC
+                      3950,           // thermistor's beta coefficient
+                      10000);         // Value of the series resistor
 
 // Global temperature reading
 int temp;
@@ -32,8 +32,9 @@ void setup()
 {
   pinMode(LED_Green, OUTPUT);
   pinMode(LED_Red, OUTPUT);
-  digitalWrite (LED_Green, LOW);
-  digitalWrite (LED_Red, LOW);
+  pinMode(13, OUTPUT);
+  //digitalWrite (LED_Green, LOW);
+  //digitalWrite (LED_Red, LOW);
   Serial.begin(9600);
 }
 
@@ -46,26 +47,39 @@ void loop()
 {
   temp = thermistor.read();   // Read temperature
   //temp2 = thermistor2.read();   // Read temperature
-  
-
+  Serial.print("Temp in MY CODE ºC : ");  Serial.println(temp);
+  Serial.println(temp>=MELT_TEMP);
+  Serial.println(temp<=FREEZING_TEMP);
+  Serial.println(wasWorking);  
+/*
   //Cooling
-  if(temp>=MELT_TEMP && !wasWorking){
-    //Melting temperature met and defrost mode was ON
-    //START
-    motorRun(1);
-    wasWorking=true;
-    
-  }else if(temp<=FREEZING_TEMP && wasWorking){    
+  if(temp>=MELT_TEMP && temp>=FREEZING_TEMP){
+      //Melting temperature met and defrost mode was ON
+      //START
+      motorRun(1);
+      wasWorking=true;
+  }
+  else if(temp<=FREEZING_TEMP){    
     //it is freezing. Cold enough to rest   
     //because the defrost mode not yet started, start defrost
     motorRun(0);
-    delay(900000);//30 minutes
+    delay(10000);//30 minutes
+    wasWorking=false;    
+  }else if(temp<=MELT_TEMP && temp>=FREEZING_TEMP){
+    motorRun(1);
+  }
+*/
+  if(wasWorking){
     wasWorking=false;
+    motorRun(0);
+    delay(3600000);
+  }else{
+    wasWorking=true;
+    motorRun(1);
+    delay(1800000);
   }
 
-
-
-  delay(5000);
+  
 }
 void motorRun(int allowed){
   Serial.println("motor runs: ");
@@ -74,9 +88,11 @@ void motorRun(int allowed){
   Serial.println(temp);
     if(allowed){
       digitalWrite (LED_Green, HIGH);
-      digitalWrite (LED_Red, LOW);      
+      digitalWrite (13, HIGH);
+      digitalWrite (LED_Red, LOW);
     }else{
       digitalWrite (LED_Green, LOW);
+      digitalWrite (13, LOW);
       digitalWrite (LED_Red, HIGH);
     }
   }
